@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Grok Eats</title>
+  <style>
+    body {font-family:Arial; background:#f0f2f5; margin:0; padding:20px;}
+    #chat {width:400px; margin:auto; background:white; border-radius:15px; box-shadow:0 5px 15px rgba(0,0,0,0.1); overflow:hidden;}
+    #msgs {height:500px; padding:20px; overflow-y:auto; background:#f9f9f9;}
+    .msg {margin:10px; padding:12px; border-radius:18px; max-width:80%;}
+    .user {background:#0084ff; color:white; align-self:flex-end; margin-left:auto;}
+    .bot {background:#e5e5ea; color:black;}
+    input {width:100%; padding:15px; border:none; font-size:16px; box-sizing:border-box;}
+  </style>
+</head>
+<body>
+  <div id="chat">
+    <div id="msgs"><div class="msg bot">Welcome to Grok Eats! Type "menu"</div></div>
+    <input type="text" id="txt" placeholder="Type here..." onkeypress="if(event.key==='Enter')send()">
+  </div>
+
+  <script>
+    function send(){
+      let msg = document.getElementById("txt").value;
+      if(!msg) return;
+      addMsg(msg, "user");
+      fetch("/chat", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({msg})})
+        .then(r=>r.json()).then(data=>addMsg(data.reply, "bot"));
+      document.getElementById("txt").value="";
+    }
+    function addMsg(text, who){
+      let div = document.createElement("div");
+      div.className = "msg "+who;
+      div.innerHTML = text;
+      document.getElementById("msgs").appendChild(div);
+      div.scrollIntoView();
+    }
+  </script>
+</body>
+</html>
